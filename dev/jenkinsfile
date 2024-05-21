@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout code from the Git repository
+                checkout([
+                    $class: 'GITSCM',
+                    branches: [[name: '*/master']],
+                    extensions: [],
+                    userRemoteConfigs: [[url: 'https://github.com/raouldzodoum/terraform_module.git']]
+                ])
+            }
+        }
+
+        stage('Initialize Terraform') {
+            steps {
+                script {
+                    // Initialize Terraform
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Plan Terraform') {
+            steps {
+                script {
+                    // Generate and show an execution plan
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Apply Terraform') {
+            steps {
+                script {
+                    // Apply the Terraform configuration
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+
+
+        stage('Destroy Terraform') {
+            steps {
+                script {
+                    // Destroy the infrastructure provisioned by Terraform
+                    sh 'terraform destroy -auto-approve'
+                }
+            }
+        }
+}
